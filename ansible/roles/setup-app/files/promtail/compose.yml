@@ -1,0 +1,36 @@
+services:
+  promtail:
+    image: grafana/promtail
+    volumes:
+      - ./config.yml:/etc/promtail/docker-config.yaml
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+    command: 
+      - "-config.file=/etc/promtail/docker-config.yaml"
+    networks:
+      - app
+    restart: always
+
+  node-exporter:
+    image: prom/node-exporter
+    networks:
+      - app  
+    container_name: node-exporter
+    ports:
+      - "9100:9100"
+    restart: always      
+
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:v0.47.2
+    container_name: cadvisor
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro    
+
+networks:
+  app:
+    name: app
