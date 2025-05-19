@@ -66,13 +66,12 @@ pipeline {
       steps {
         sshagent(credentials: ['ssh_instance_key']) {
           sh """
-              mkdir -p /var/lib/jenkins/.ssh
-              ssh-keyscan -H 3.87.0.104 >> /var/lib/jenkins/.ssh/known_hosts
-
-              ssh ubuntu@3.87.0.104 'mkdir -p /opt/bookshop'
-
-              scp docker-compose.tmpl ubuntu@3.87.0.104:/opt/bookshop/docker-compose.tmpl
-          """
+         mkdir -p /var/lib/jenkins/.ssh
+         ssh-keyscan -H ${HOST} >> /var/lib/jenkins/.ssh/known_hosts
+         chmod 600 /var/lib/jenkins/.ssh/known_hosts        
+         scp /var/lib/jenkins/workspace/My_Lessons_Folder/node-app/docker-compose.tmpl root@${HOST}:/opt
+         scp /var/lib/jenkins/workspace/My_Lessons_Folder/node-app/promtail-config.yaml root@${HOST}:/opt
+         """
         }
       }
     }    
