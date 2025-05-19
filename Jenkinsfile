@@ -109,7 +109,7 @@ pipeline {
           sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 
           sudo usermod -aG docker $USER
-          sudo systemctl restart jenkins
+          
           else
           echo "[INFO] Docker already installed"
           fi
