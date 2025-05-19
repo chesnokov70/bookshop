@@ -26,6 +26,16 @@ pipeline {
         }
       }
     }
+
+    stage('Get Git Revision') {
+      steps {
+          script {
+              def revision = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
+              echo "Current Git revision: ${revision}"
+          }
+      }
+    }
+  
     
     stage ('Clone repo') {
       steps {
