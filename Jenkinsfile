@@ -133,6 +133,16 @@ pipeline {
         }
       }
     }
+
+    stage('Verify Application') {
+      steps {
+        sshagent(['ssh_instance_key']) {
+            sh 'ssh ubuntu@3.87.0.104 curl -f http://localhost:8000/health || exit 1'
+        }
+      }
+    }
+
+
   }
 }
 
