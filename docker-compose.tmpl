@@ -13,7 +13,7 @@ services:
       - app-network
 
   bookshop_api:
-    build: .
+    image: ${APP_IMG}
     environment:
       - DATABASE_URL=postgresql://bookshop:bookshoppass@postgres:5432/bookshopdb
     depends_on:
