@@ -109,16 +109,11 @@ pipeline {
           sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 
           sudo usermod -aG docker $USER
+          sudo systemctl restart jenkins
           else
           echo "[INFO] Docker already installed"
           fi
 
-          # Проверка Docker Compose plugin
-          if ! docker compose version &> /dev/null
-          then
-          echo "[ERROR] Docker Compose plugin not found"
-          exit 1
-          fi
 
           docker version
           docker compose version
