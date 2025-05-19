@@ -70,16 +70,62 @@ pipeline {
          ssh-keyscan -H ${HOST} >> /var/lib/jenkins/.ssh/known_hosts
          chmod 600 /var/lib/jenkins/.ssh/known_hosts        
 
-        scp /var/lib/jenkins/workspace/My_Lessons_Folder/bookshop/docker-compose.tmpl ${EC2_USER}@${HOST}:/home/ubuntu/
-        scp /var/lib/jenkins/workspace/My_Lessons_Folder/bookshop/promtail-config.yaml ${EC2_USER}@${HOST}:/home/ubuntu/
+         scp /var/lib/jenkins/workspace/My_Lessons_Folder/bookshop/docker-compose.tmpl ${EC2_USER}@${HOST}:/home/ubuntu/
+         scp /var/lib/jenkins/workspace/My_Lessons_Folder/bookshop/promtail-config.yaml ${EC2_USER}@${HOST}:/home/ubuntu/
 
-        ssh ${EC2_USER}@${HOST} 'sudo mv /home/ubuntu/docker-compose.tmpl /opt/docker-compose.tmpl'
-        ssh ${EC2_USER}@${HOST} 'sudo mv /home/ubuntu/promtail-config.yaml /opt/promtail-config.yaml'        
+         ssh ${EC2_USER}@${HOST} 'sudo mv /home/ubuntu/docker-compose.tmpl /opt/docker-compose.tmpl'
+         ssh ${EC2_USER}@${HOST} 'sudo mv /home/ubuntu/promtail-config.yaml /opt/promtail-config.yaml'        
          """
         }
       }
     }    
     
+    stage('Install Docker and Compose') {
+      steps {
+          sh '''
+          #!/bin/bash
+          set -e
+
+          # Проверка, установлен ли Docker
+          if ! command -v docker &> /dev/null
+          then
+          echo "[INFO] Installing Docker..."
+
+          sudo apt-get update
+          sudo apt-get install -y ca-certificates curl gnupg lsb-release
+
+          sudo mkdir -p /etc/apt/keyrings
+          curl -fsSL https://download.docker.com/linux/ubuntu/gpg | \
+          sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+
+          echo \
+          "deb [arch=$(dpkg --print-architecture) \
+          signed-by=/etc/apt/keyrings/docker.gpg] \
+          https://download.docker.com/linux/ubuntu \
+          $(lsb_release -cs) stable" | \
+          sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+          sudo apt-get update
+          sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+          sudo usermod -aG docker $USER
+          else
+          echo "[INFO] Docker already installed"
+          fi
+
+          # Проверка Docker Compose plugin
+          if ! docker compose version &> /dev/null
+          then
+          echo "[ERROR] Docker Compose plugin not found"
+          exit 1
+          fi
+
+          docker version
+          docker compose version
+          '''
+      }
+    }
+
     stage('Deploy on EC2') {
       steps {
         script {
