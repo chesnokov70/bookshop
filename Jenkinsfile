@@ -9,7 +9,7 @@ pipeline {
   }
 
   environment {
-    EC2_USER = "root"
+    EC2_USER = "ubuntu"
     REGISTRY = "chesnokov70/bookshop"
     HOST = '3.87.0.104'
     SSH_KEY = credentials('ssh_instance_key')       // EC2 key
