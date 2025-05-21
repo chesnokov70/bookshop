@@ -115,19 +115,18 @@ pipeline {
       }
     }
 
-    stage('Deploy on EC2') {
+    stage ('Deploy node-app') {
       steps {
         script {
           sshCommand remote: remote, command: """
-            cd /opt
-            sudo sh -c 'APP_IMG="${REGISTRY}:${BUILD_ID}" envsubst < docker-compose.tmpl > docker-compose.yaml'
-            sudo docker compose up -d
+          export APP_IMG="${env.REGISTRY}:${env.BUILD_ID}"
+          cd /opt
+          envsubst < docker-compose.tmpl | sudo tee docker-compose.yaml         
+          docker compose up -d
           """
         }
       }
     }
-
-
 
     stage('Verify Application') {
       steps {
