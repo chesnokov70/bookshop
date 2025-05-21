@@ -77,7 +77,8 @@ pipeline {
 
          ssh ${EC2_USER}@${HOST} 'sudo mv /home/ubuntu/docker-compose.tmpl /opt/docker-compose.tmpl'
          ssh ${EC2_USER}@${HOST} 'sudo mv /home/ubuntu/promtail-config.yaml /opt/promtail-config.yaml'    
-         ssh ${EC2_USER}@${HOST} 'sudo mv /home/ubuntu/nginx /opt/'             
+         ssh ${EC2_USER}@${HOST} 'sudo cp -r /home/ubuntu/nginx/* /opt/nginx/'
+       
          """
         }
       }
