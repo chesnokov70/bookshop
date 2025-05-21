@@ -72,7 +72,9 @@ pipeline {
 
          scp /var/lib/jenkins/workspace/My_Lessons_Folder/bookshop/docker-compose.tmpl ${EC2_USER}@${HOST}:/home/ubuntu/
          scp /var/lib/jenkins/workspace/My_Lessons_Folder/bookshop/promtail-config.yaml ${EC2_USER}@${HOST}:/home/ubuntu/
-         scp /var/lib/jenkins/workspace/My_Lessons_Folder/bookshop/nginx/ ${EC2_USER}@${HOST}:/home/ubuntu/         
+         scp /var/lib/jenkins/workspace/My_Lessons_Folder/bookshop/nginx/ ${EC2_USER}@${HOST}:/home/ubuntu/  
+         scp -r /var/lib/jenkins/workspace/My_Lessons_Folder/bookshop/nginx/ ${EC2_USER}@${HOST}:/home/ubuntu/ 
+       
 
          ssh ${EC2_USER}@${HOST} 'sudo mv /home/ubuntu/docker-compose.tmpl /opt/docker-compose.tmpl'
          ssh ${EC2_USER}@${HOST} 'sudo mv /home/ubuntu/promtail-config.yaml /opt/promtail-config.yaml'    
