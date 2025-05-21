@@ -119,15 +119,14 @@ pipeline {
       steps {
         script {
           sshCommand remote: remote, command: """
-            export APP_IMG="${REGISTRY}:${BUILD_ID}"
-
             cd /opt
-            sudo sh -c 'envsubst < docker-compose.tmpl > docker-compose.yaml'
+            sudo sh -c 'APP_IMG="${REGISTRY}:${BUILD_ID}" envsubst < docker-compose.tmpl > docker-compose.yaml'
             sudo docker compose up -d
           """
         }
       }
     }
+
 
 
     stage('Verify Application') {
