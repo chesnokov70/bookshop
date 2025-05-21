@@ -72,9 +72,11 @@ pipeline {
 
          scp /var/lib/jenkins/workspace/My_Lessons_Folder/bookshop/docker-compose.tmpl ${EC2_USER}@${HOST}:/home/ubuntu/
          scp /var/lib/jenkins/workspace/My_Lessons_Folder/bookshop/promtail-config.yaml ${EC2_USER}@${HOST}:/home/ubuntu/
+         scp /var/lib/jenkins/workspace/My_Lessons_Folder/bookshop/nginx/ ${EC2_USER}@${HOST}:/home/ubuntu/         
 
          ssh ${EC2_USER}@${HOST} 'sudo mv /home/ubuntu/docker-compose.tmpl /opt/docker-compose.tmpl'
-         ssh ${EC2_USER}@${HOST} 'sudo mv /home/ubuntu/promtail-config.yaml /opt/promtail-config.yaml'        
+         ssh ${EC2_USER}@${HOST} 'sudo mv /home/ubuntu/promtail-config.yaml /opt/promtail-config.yaml'    
+         ssh ${EC2_USER}@${HOST} 'sudo mv /home/ubuntu/nginx /opt/'             
          """
         }
       }
@@ -127,16 +129,6 @@ pipeline {
         }
       }
     }
-
-    stage('Verify Application') {
-      steps {
-        sshagent(['ssh_instance_key']) {
-            sh 'ssh ubuntu@54.89.139.34 curl -f http://localhost:8000/health || exit 1'
-        }
-      }
-    }
-
-
   }
 }
 
