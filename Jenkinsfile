@@ -79,45 +79,39 @@ pipeline {
         }
       }
     }    
-    
+
     stage('Install Docker and Compose') {
       steps {
-          sh '''
-          #!/bin/bash
-          set -e
+        script {
+          sshCommand remote: remote, command: '''
+            set -e
 
-          # Проверка, установлен ли Docker
-          if ! command -v docker &> /dev/null
-          then
-          echo "[INFO] Installing Docker..."
+            if ! command -v docker &> /dev/null
+            then
+              echo "[INFO] Installing Docker..."
 
-          sudo apt-get update
-          sudo apt-get install -y ca-certificates curl gnupg lsb-release
+              sudo apt-get update
+              sudo apt-get install -y ca-certificates curl gnupg lsb-release
 
-          sudo mkdir -p /etc/apt/keyrings
-          curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --batch --yes --dearmor -o /etc/apt/keyrings/docker.gpg
+              sudo mkdir -p /etc/apt/keyrings
+              curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
 
+              echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] \
+              https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | \
+              sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 
-          echo \
-          "deb [arch=$(dpkg --print-architecture) \
-          signed-by=/etc/apt/keyrings/docker.gpg] \
-          https://download.docker.com/linux/ubuntu \
-          $(lsb_release -cs) stable" | \
-          sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+              sudo apt-get update
+              sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
 
-          sudo apt-get update
-          sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+              sudo usermod -aG docker $USER
+            else
+              echo "[INFO] Docker already installed"
+            fi
 
-          sudo usermod -aG docker $USER
-          
-          else
-          echo "[INFO] Docker already installed"
-          fi
-
-
-          docker version
-          docker compose version
+            docker --version
+            docker compose version
           '''
+        }
       }
     }
 
@@ -126,18 +120,20 @@ pipeline {
         script {
           sshCommand remote: remote, command: """
             export APP_IMG="${REGISTRY}:${BUILD_ID}"
+
             cd /opt
-            envsubst < docker-compose.tmpl > docker-compose.yaml
-            docker compose up -d
+            sudo sh -c 'envsubst < docker-compose.tmpl > docker-compose.yaml'
+            sudo docker compose up -d
           """
         }
       }
     }
 
+
     stage('Verify Application') {
       steps {
         sshagent(['ssh_instance_key']) {
-            sh 'ssh ubuntu@3.87.0.104 curl -f http://localhost:8000/health || exit 1'
+            sh 'ssh ubuntu@54.89.139.34 curl -f http://localhost:8000/health || exit 1'
         }
       }
     }
