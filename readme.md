@@ -55,3 +55,5 @@ curl -X POST http://localhost/books \
 curl http://localhost/books
 
 curl http://localhost/books | jq
+
+docker exec -it opt-nginx-1 curl http://bookshop_api:5000/books
