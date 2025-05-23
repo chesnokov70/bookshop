@@ -11,7 +11,7 @@ pipeline {
   environment {
     EC2_USER = "ubuntu"
     REGISTRY = "chesnokov70/bookshop"
-    HOST = '54.89.139.34'
+    HOST = '54.92.169.46'
     SSH_KEY = credentials('ssh_instance_key')       // EC2 key
     TOKEN = credentials('hub_token')                // Docker Hub token
   }
